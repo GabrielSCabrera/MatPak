@@ -1,0 +1,5 @@
+g++ -o main *.cpp -std=c++17 -fopenmp
+
+MEMTEST:
+
+valgrind --leak-check=full ./main
