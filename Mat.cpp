@@ -3,6 +3,7 @@
 #include "Vec.h"
 #include "Mat.h"
 #include "tools.h"
+#include <cassert>
 
 // CONSTRUCTOR
 
@@ -88,6 +89,15 @@ int Mat::locate(const int& idx1, const int& idx2, const int& idx3, const int& id
   int indices[6] = {idx1, idx2, idx3, idx4, idx5, idx6};
   int idx = 0;
   int prod;
+  int new_idx = 0;
+
+  int n = 0;
+  while (n < dims-1) {
+    new_idx += indices[n]*size[dims-n-1];
+    n++;
+  }
+  new_idx += indices[n];
+
   for (int i = 0; i < dims; i++) {
     prod = 1;
     for (int j = i+1; j < dims; j++) {
@@ -95,6 +105,13 @@ int Mat::locate(const int& idx1, const int& idx2, const int& idx3, const int& id
     }
     idx += indices[i]*prod;
   }
+
+  // assert(idx == new_idx);
+  if (idx != new_idx) {
+    std::cout << idx << " " << new_idx << " " << dims << " idx " << idx1 << " " << idx2 << " " << idx3 << " " << idx4 << " " << idx5 << " " << idx6 << " size ";
+    std::cout << size[0] << " " << size[1] << " " << size[2] << " " << size[3] << " " << size[4] << " " << size[5] <<  std::endl;
+  }
+
   return idx;
 }
 
@@ -389,8 +406,8 @@ Mat Mat::mat_mul(Mat u){
 
   Mat v(d0, u_d1);
   double total;
-  #pragma omp parallel for schedule(dynamic, 1000)
   for (int i = 0; i < d0; i++) {
+    // #pragma omp parallel for schedule(dynamic, 1000)
     for (int j = 0; j < u_d1; j++) {
       total = 0;
       for (int k = 0; k < d1; k++) {

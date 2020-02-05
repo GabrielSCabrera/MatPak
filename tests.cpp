@@ -545,6 +545,7 @@ void tests_Mat() {
 
   int g33[5][3] = {{1,0,1},{1,0,1},{1,0,2},{1,0,2},{1,0,1}};
   for (int i = 0; i < 5; i++) {
+    // std::cout << g13.get(g33[i][0], g33[i][1], g33[i][2]) << " " << g23[i] << std::endl;
   	assert(g13.get(g33[i][0], g33[i][1], g33[i][2]) == g23[i]);
   }
 
@@ -754,6 +755,8 @@ void tests_Mat() {
 }
 
 void tests_MP() {
-  Mat a1(1000,1000);
+  Mat a1(100,100);
   Mat a2 = a1 + a1;
+  Mat a3 = a1.prod(a1);
+  Mat a4 = a1.mat_mul(a1);
 }

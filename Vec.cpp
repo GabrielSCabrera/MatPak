@@ -104,6 +104,7 @@ void Vec::print() {
 Vec Vec::operator+(const Vec& u){
   check_dims(u);
   Vec v(len);
+  // #pragma omp parallel for
   for (int i = 0; i < len; i++){
     v.values[i] = values[i] + u.values[i];
   }
@@ -113,6 +114,7 @@ Vec Vec::operator+(const Vec& u){
 Vec Vec::operator-(const Vec& u){
   check_dims(u);
   Vec v(len);
+  // #pragma omp parallel for
   for (int i = 0; i < len; i++){
     v.values[i] = values[i] - u.values[i];
   }
@@ -121,6 +123,7 @@ Vec Vec::operator-(const Vec& u){
 
 Vec Vec::operator-(){
   Vec v(len);
+  // #pragma omp parallel for
   for (int i = 0; i < len; i++){
     v.values[i] = -values[i];
   }
@@ -129,6 +132,7 @@ Vec Vec::operator-(){
 
 Vec Vec::operator*(const double& a) {
   Vec v(len);
+  // #pragma omp parallel for
   for (int i = 0; i < len; i++){
     v.values[i] = a*values[i];
   }
@@ -147,6 +151,7 @@ Vec Vec::operator/(const double& a) {
 
 void Vec::operator+=(const Vec& u){
   check_dims(u);
+  // #pragma omp parallel for
   for (int i = 0; i < len; i++){
     values[i] = values[i] + u.values[i];
   }
@@ -154,12 +159,14 @@ void Vec::operator+=(const Vec& u){
 
 void Vec::operator-=(const Vec& u){
   check_dims(u);
+  // #pragma omp parallel for
   for (int i = 0; i < len; i++){
     values[i] = values[i] - u.values[i];
   }
 }
 
 void Vec::operator*=(const double& a) {
+  // #pragma omp parallel for
   for (int i = 0; i < len; i++) {
     values[i] = a*values[i];
   }
