@@ -135,12 +135,14 @@ Mat Mat::transpose() {
     throw std::domain_error(msg);
   } else if (dims == 1) {
     Mat v(1, size[0]);
+    #pragma omp parallel for
     for (int i = 0; i < size[0]; i++) {
       v.values[i] = values[i];
     }
     return v;
   } else {
     Mat v(size[1], size[0]);
+    #pragma omp parallel for
     for (int i=0; i < size[1]; i++) {
       for (int j=0; j < size[0]; j++) {
         v.set(get(j,i), i, j);
@@ -156,6 +158,7 @@ Mat Mat::transpose(const int& idx1, const int& idx2, const int& idx3, const int&
   bool idx_check[6] = {false, false, false, false, false};
   int check = 0;
   bool slot = false;
+  #pragma omp parallel for
   for (int i = 0; i < 6; i++) {
     for (int j = 0; j < 6; j++) {
       if (size[i] == indices[j] && idx_check[j] == false) {
@@ -170,6 +173,7 @@ Mat Mat::transpose(const int& idx1, const int& idx2, const int& idx3, const int&
       slot = false;
     }
   }
+  #pragma omp parallel for
   for (int i = 0; i < 6; i++) {
     if (indices[i] == 0) {
       indices[i]++;
@@ -177,6 +181,7 @@ Mat Mat::transpose(const int& idx1, const int& idx2, const int& idx3, const int&
   }
   int idx[6] = {0,0,0,0,0,0};
   Mat v(idx1, idx2, idx3, idx4, idx5, idx6);
+  #pragma omp parallel for
   for (int i6 = 0; i6 < indices[5]; i6++) {
     idx[5] = i6;
     for (int i5 = 0; i5 < indices[4]; i5++) {
@@ -479,6 +484,7 @@ double Mat::determinant() {
       p = get(0,i);
       v = v*0;
       for (int j = 1; j < size[0]; j++) {
+        #pragma omp parallel for
         for (int k = 0; k < size[0]; k++) {
           if (k < i) {
             v.set(get(j,k), j-1, k);
@@ -558,6 +564,7 @@ Mat Mat::cofactor() {
     for (i = 0; i < size[0]; i++) {
       for (j = 0; j < size[1]; j++) {
         for (k = 0; k < size[0]; k++) {
+          #pragma omp parallel for
           for (l = 0; l < size[1]; l++) {
             if(k == i || l == j) {
               continue;
@@ -588,6 +595,7 @@ Mat Mat::cofactor() {
 Mat Mat::outer(const Mat& u) {
   if (dims == 2 && size[0] == 1 && size[1] >= 1 && u.dims == 1) {
     Mat v(size[1], u.size[0]);
+    #pragma omp parallel for
     for (int i = 0; i < size[1]; i++) {
       for (int j = 0; j < u.size[0]; j++) {
         v.set(get(0,i)*u.values[j], i, j);
@@ -596,6 +604,7 @@ Mat Mat::outer(const Mat& u) {
     return v;
   } else if (dims == u.dims && dims == 1) {
     Mat v(size[0], u.size[0]);
+    #pragma omp parallel for
     for (int i = 0; i < size[0]; i++) {
       for (int j = 0; j < u.size[0]; j++) {
         v.set(get(i)*u.values[j], i, j);
@@ -634,6 +643,7 @@ Mat Mat::rref() {
       }
     }
   }
+  #pragma omp parallel for
   for (int i = 0; i < size[0]; i++) {
     for (int j = 0; j < size[1]; j++) {
       u.set(get(i,j),rows[i],j);
@@ -642,6 +652,7 @@ Mat Mat::rref() {
 
   double c;
   int i; int j; int k;
+  #pragma omp parallel for
   for (i = 0; i < size[0]; i++) {
     for (j = 0; j < size[0]; j++) {
       if (i == j || u.get(i,i) == 0) {
@@ -654,6 +665,7 @@ Mat Mat::rref() {
       }
     }
   }
+  #pragma omp parallel for
   for (i = 0; i < size[0]; i++) {
     for (j = 0; j < size[1]; j++) {
       if (u.get(i,i) == 0) {
