@@ -22,6 +22,15 @@ Mat::Mat(const int& d1, const int& d2, const int& d3, const int& d4, const int& 
       len *= size[i];
     }
   }
+
+  idx_increments = new int[6] {0, 0, 0, 0, 0, 0};
+  for (int i = 0; i < dims; i++) {
+    idx_increments[i] = 1;
+    for (int j = i+1; j < dims; j++) {
+      idx_increments[i] *= size[j];
+    }
+  }
+
   values = new double[len];
   for (int i = 0; i < len; i++) {
     values[i] = 0;
@@ -33,18 +42,27 @@ Mat::Mat(const Mat& u) {
   for (int i = 0; i < 6; i++) {
     size[i] = u.size[i];
   }
+
   len = u.len;
+  dims = u.dims;
+
   values = new double[len];
+
   for (int i = 0; i < len; i++) {
     values[i] = u.values[i];
   }
-  dims = u.dims;
+
+  idx_increments = new int[6];
+  for (int i = 0; i < 6; i++) {
+    idx_increments[i] = u.idx_increments[i];
+  }
 }
 
 // DESTRUCTOR
 
 Mat::~Mat() {
   delete []size;
+  delete []idx_increments;
   delete []values;
 }
 
@@ -86,44 +104,19 @@ int Mat::locate(const int& idx1, const int& idx2, const int& idx3, const int& id
 
    [1,2,3,4,5,6]    [0,1,2,3,4,5]
   */
-  int indices[6] = {idx1, idx2, idx3, idx4, idx5, idx6};
-  int idx = 0;
-  int prod;
-  int new_idx = 0;
 
-  int n = 0;
-  while (n < dims-1) {
-    new_idx += indices[n]*size[dims-n-1];
-    n++;
-  }
-  new_idx += indices[n];
-
-  for (int i = 0; i < dims; i++) {
-    prod = 1;
-    for (int j = i+1; j < dims; j++) {
-      prod *= size[j];
-    }
-    idx += indices[i]*prod;
-  }
-
-  // assert(idx == new_idx);
-  if (idx != new_idx) {
-    std::cout << idx << " " << new_idx << " " << dims << " idx " << idx1 << " " << idx2 << " " << idx3 << " " << idx4 << " " << idx5 << " " << idx6 << " size ";
-    std::cout << size[0] << " " << size[1] << " " << size[2] << " " << size[3] << " " << size[4] << " " << size[5] <<  std::endl;
-  }
-
-  return idx;
+  return idx1*idx_increments[0] + idx2*idx_increments[1]
+       + idx3*idx_increments[2] + idx4*idx_increments[3]
+       + idx5*idx_increments[4] + idx6*idx_increments[5];
 }
 
 void Mat::set(const double& val, const int& idx1, const int& idx2, const int& idx3, const int& idx4, const int& idx5, const int& idx6) {
-  int idx = locate(idx1, idx2, idx3, idx4, idx5, idx6);
-  values[idx] = val;
+  values[locate(idx1, idx2, idx3, idx4, idx5, idx6)] = val;
 }
 
 double Mat::get(const int& idx1, const int& idx2, const int& idx3, const int& idx4, const int& idx5, const int& idx6) {
   // Returns array value at given indices
-  int idx = locate(idx1, idx2, idx3, idx4, idx5, idx6);
-  return values[idx];
+  return values[locate(idx1, idx2, idx3, idx4, idx5, idx6)];
 }
 
 void Mat::set_raw(const double& val, const int& idx) {
@@ -406,8 +399,8 @@ Mat Mat::mat_mul(Mat u){
 
   Mat v(d0, u_d1);
   double total;
+  #pragma omp parallel for
   for (int i = 0; i < d0; i++) {
-    // #pragma omp parallel for schedule(dynamic, 1000)
     for (int j = 0; j < u_d1; j++) {
       total = 0;
       for (int k = 0; k < d1; k++) {

@@ -755,7 +755,7 @@ void tests_Mat() {
 }
 
 void tests_MP() {
-  Mat a1(100,100);
+  Mat a1(1000,1000);
   Mat a2 = a1 + a1;
   Mat a3 = a1.prod(a1);
   Mat a4 = a1.mat_mul(a1);
