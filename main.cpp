@@ -2,10 +2,11 @@
 #include <chrono>
 #include <cmath>
 // #include "gnuplot-iostream.h"
-#include "Vec.h"
-#include "Mat.h"
-#include "tests.h"
-#include "tools.h"
+// #include "Vec.h"
+// #include "Mat.h"
+// #include "tests.h"
+// #include "tools.h"
+#include "matpak.so"
 
 void tests() {
   auto t0 = std::chrono::high_resolution_clock::now();

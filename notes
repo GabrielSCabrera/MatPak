@@ -1,5 +1,10 @@
 g++ -o main *.cpp -std=c++17 -fopenmp -O3 && ./main
 
+SHARED LIBRARY:
+
+g++ -fPIC -std=c++17 -fopenmp -O3 -shared tools.cpp Vec.cpp Mat.cpp tests.cpp -o matpak.so
+g++ main.cpp -lmatpak -o main
+
 MEMTEST:
 
 valgrind --leak-check=full ./main

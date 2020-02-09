@@ -1,7 +1,7 @@
-#include<iostream>
+#include <iostream>
 #include <cmath>
-#include "Vec.h"
-#include "Mat.h"
+// #include "Vec.h"
+// #include "Mat.h"
 
 std::string sci_not(double x, int N=1, int n=2) {
   // Creates a string in scientific notation in the Python style from a double "x"
@@ -77,13 +77,13 @@ void print(std::string s) {
   std::cout << s << std::endl;
 }
 
-void print(Vec v) {
-  v.print();
-}
-
-void print(Mat v) {
-  v.print();
-}
+// void print(Vec v) {
+//   v.print();
+// }
+//
+// void print(Mat v) {
+//   v.print();
+// }
 
 void print(int s) {
   std::cout << std::to_string(s) << std::endl;
